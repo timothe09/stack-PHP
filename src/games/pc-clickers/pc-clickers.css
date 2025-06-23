@@ -1,0 +1,462 @@
+/* Corps du document inchangé */
+
+/* Animation de fond */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradient 15s ease infinite;
+    font-family: 'Arial', sans-serif;
+    min-height: 100vh;
+    color: white;
+}
+
+@keyframes gradient {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+    100% { transform: scale(1); }
+}
+
+/* Styles du conteneur de jeu */
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    min-height: 600px;
+    margin: 40px auto 0 auto;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to bottom, #2c3e50, #3498db);
+    padding: 32px 24px 24px 24px;
+}
+
+/* Styles des statistiques */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.6);
+    border-radius: 12px;
+    padding: 18px 0;
+    margin-bottom: 24px;
+    font-size: 1.3em;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    min-width: 200px;
+}
+
+.stats div {
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
+}
+
+/* Styles du menu principal */
+.main-menu {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 24px;
+}
+
+.menu-btn {
+    background: linear-gradient(90deg, #ee7752 0%, #23a6d5 100%);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 32px;
+    font-size: 1.1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+    text-shadow: 1px 1px 2px #0008;
+}
+
+.menu-btn.active, .menu-btn:hover {
+    background: linear-gradient(90deg, #FFD700 0%, #e73c7e 100%);
+    color: #232526;
+    transform: scale(1.07);
+}
+
+/* Styles de la section de jeu */
+.game-section {
+    transition: opacity 0.3s;
+}
+
+.game-section:not(.active) {
+    display: none;
+    opacity: 0;
+}
+
+/* Styles de la zone cliquable */
+.click-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 32px;
+}
+
+.clickable-pc {
+    background: linear-gradient(145deg, #232526 60%, #23d5ab 100%);
+    border-radius: 50%;
+    width: 160px;
+    height: 160px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 32px 0 rgba(76,175,80,0.18);
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.2s;
+    position: relative;
+    user-select: none;
+    animation: pulse 2s infinite;
+}
+
+.clickable-pc:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 8px 0 rgba(76,175,80,0.18);
+}
+
+.clickable-pc .emoji {
+    font-size: 3.5em;
+    filter: drop-shadow(0 2px 8px #FFD70088);
+    margin-bottom: 8px;
+}
+
+.pc-text {
+    font-size: 1.1em;
+    color: #FFD700;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 0 1px 6px #0008;
+}
+
+/* Styles de la boutique */
+.shop {
+    margin-top: 24px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 12px;
+    padding: 18px 12px 12px 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.shop-categories {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 18px;
+    justify-content: center;
+}
+
+.cat-btn {
+    background: linear-gradient(90deg, #23a6d5 0%, #23d5ab 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 22px;
+    font-size: 1em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.cat-btn.active, .cat-btn:hover {
+    background: linear-gradient(90deg, #FFD700 0%, #e73c7e 100%);
+    color: #232526;
+    transform: scale(1.07);
+}
+
+.shop-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    justify-content: center;
+}
+
+.shop-items.hidden {
+    display: none;
+}
+
+.shop-item {
+    background: rgba(255,255,255,0.07);
+    border-radius: 10px;
+    padding: 16px 18px;
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    position: relative;
+}
+
+.shop-item:hover {
+    background: rgba(255,255,255,0.18);
+    transform: scale(1.04);
+}
+
+.shop-item .emoji {
+    font-size: 2.2em;
+    margin-bottom: 6px;
+    cursor: pointer;
+    position: relative;
+    z-index: 11;
+}
+
+.shop-item .item-info {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 110%;
+    transform: translateX(-50%);
+    min-width: 180px;
+    background: rgba(44, 62, 80, 0.98);
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px #0007;
+    padding: 14px 18px;
+    z-index: 10;
+    font-size: 0.98em;
+    text-align: left;
+    pointer-events: none;
+    white-space: normal;
+}
+
+.shop-item .emoji:hover + .item-info,
+.shop-item .emoji:focus + .item-info {
+    display: block;
+}
+
+.shop-item .owned {
+    position: absolute;
+    top: 10px;
+    right: 14px;
+    background: #FFD700;
+    color: #232526;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1em;
+    box-shadow: 0 1px 4px #0003;
+}
+
+/* Styles des contrôles de sauvegarde */
+.save-controls {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    margin-top: 28px;
+}
+
+.save-controls button {
+    background: linear-gradient(90deg, #ee7752 0%, #23a6d5 100%);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+}
+
+.save-controls button:hover {
+    background: linear-gradient(90deg, #FFD700 0%, #e73c7e 100%);
+    color: #232526;
+    transform: scale(1.07);
+}
+
+/* Styles des succès */
+.achievements-section {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 15px;
+    padding: 20px;
+    margin-top: 24px;
+    box-shadow: 0 2px 8px rgba(255,215,0,0.08);
+}
+
+.achievements-section h2 {
+    text-align: center;
+    color: #FFD700;
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.achievement-list {
+    display: grid;
+    gap: 15px;
+    max-height: 600px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+.achievement {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 15px;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 15px;
+    transition: all 0.3s;
+    opacity: 0.7;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid transparent;
+}
+
+.achievement::before {
+    content: '🔒';
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 1.2em;
+    opacity: 0.5;
+}
+
+.achievement.unlocked {
+    opacity: 1;
+    background: rgba(76, 175, 80, 0.13);
+    border: 1.5px solid #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.13);
+}
+
+.achievement.unlocked::before {
+    content: '✅';
+    opacity: 1;
+    color: #FFD700;
+}
+
+.achievement-icon {
+    width: 50px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.13);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8em;
+    box-shadow: 0 1px 6px #FFD70022;
+}
+
+.unlocked .achievement-icon {
+    background: rgba(255, 215, 0, 0.18);
+    animation: glow 2s infinite;
+}
+
+@keyframes glow {
+    0%, 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+    50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+}
+
+.achievement-info h3 {
+    color: #FFD700;
+    margin: 0 0 5px 0;
+    font-size: 1.2em;
+}
+
+.achievement-info p {
+    color: #b2dfdb;
+    margin: 0 0 8px 0;
+    font-size: 0.95em;
+}
+
+.achievement-info .reward {
+    color: #FFD700;
+    font-size: 0.95em;
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #81C784);
+    border-radius: 2px;
+    transition: width 0.3s ease-out;
+}
+
+.unlocked .progress {
+    background: linear-gradient(90deg, #FFD700, #FFA000);
+}
+
+/* Style pour le popup de succès */
+.achievement-popup {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(76, 175, 80, 0.95);
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: slide-in 0.5s ease-out, fade-out 0.5s ease-out 4.5s forwards;
+    z-index: 1000;
+}
+
+.achievement-popup .icon {
+    font-size: 2em;
+    animation: pulse 0.5s ease-out;
+}
+
+.achievement-popup .reward {
+    font-size: 0.9em;
+    color: #FFD700;
+    margin-top: 5px;
+}
+
+@keyframes slide-in {
+    from { transform: translateX(120%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade-out {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(120%); opacity: 0; }
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .game-container {
+        max-width: 98vw;
+        padding: 10px 2vw 20px 2vw;
+    }
+    .stats {
+        flex-direction: column;
+        gap: 10px;
+        font-size: 1em;
+    }
+    .shop-items {
+        flex-direction: column;
+        align-items: center;
+    }
+}

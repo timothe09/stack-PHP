@@ -1,0 +1,153 @@
+:root {
+    --primary-color: #3498db;
+    --primary-dark: #2980b9;
+    --secondary-color: #2ecc71;
+    --secondary-dark: #27ae60;
+    --background-color: #f0f0f0;
+    --card-background: white;
+    --text-color: #333;
+    --card-title-color: #2c3e50;
+}
+
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    background-color: var(--card-background);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem 2rem;
+}
+
+.header h1 {
+    margin: 0;
+    color: var(--primary-color);
+    font-size: 2rem;
+}
+
+.nav {
+    margin-top: 1rem;
+}
+
+.nav a {
+    color: var(--text-color);
+    text-decoration: none;
+    margin-right: 1.5rem;
+    font-weight: 500;
+}
+
+.nav a:hover {
+    color: var(--primary-color);
+}
+
+main {
+    flex: 1;
+    padding: 2rem;
+}
+
+.games-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.game-card {
+    background-color: var(--card-background);
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.game-card h2 {
+    margin-top: 0;
+    color: var(--card-title-color);
+    font-size: 1.5rem;
+}
+
+.game-card p {
+    color: #666;
+    line-height: 1.5;
+    margin: 1rem 0;
+}
+
+.game-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.game-buttons a {
+    padding: 0.75rem 1.5rem;
+    text-decoration: none;
+    border-radius: 6px;
+    flex: 1;
+    text-align: center;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.play-button {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.scores-button {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.play-button:hover {
+    background-color: var(--primary-dark);
+}
+
+.scores-button:hover {
+    background-color: var(--secondary-dark);
+}
+
+.footer {
+    background-color: var(--card-background);
+    padding: 1.5rem;
+    text-align: center;
+    margin-top: auto;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
+
+.footer p {
+    margin: 0;
+    color: #666;
+}
+
+@media (max-width: 768px) {
+    .header {
+        padding: 1rem;
+    }
+
+    .header h1 {
+        font-size: 1.5rem;
+    }
+
+    .games-container {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+    }
+
+    .game-buttons {
+        flex-direction: column;
+    }
+}

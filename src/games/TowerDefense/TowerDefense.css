@@ -31,7 +31,7 @@ body {
 
 .game-grid {
     display: grid;
-    grid-template-columns: repeat(10, 50px);
+    grid-template-columns: repeat(15, 50px);
     grid-template-rows: repeat(8, 50px);
     gap: 2px;
     background-color: #333;
@@ -263,6 +263,28 @@ body {
 
 .upgrade-button:hover {
     background-color: #ffaa44;
+}
+
+.sell-button {
+    position: absolute;
+    bottom: -12px;
+    right: -12px;
+    background-color: #ff6644;
+    color: #fff;
+    font-size: 0.7em;
+    padding: 2px 4px;
+    border-radius: 3px;
+    cursor: pointer;
+    z-index: 9999;
+    transition: background-color 0.3s;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    display: block;
+    white-space: nowrap;
+    pointer-events: auto;
+}
+
+.sell-button:hover {
+    background-color: #ff4422;
 }
 
 .has-tower .upgrade-button {

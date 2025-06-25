@@ -2,7 +2,7 @@
 const GAME_CONFIG = {
     INITIAL_MONEY: 100,
     INITIAL_LIVES: 10,
-    GRID_WIDTH: 10,
+    GRID_WIDTH: 15,
     GRID_HEIGHT: 8,
     CELL_SIZE: 50,
     INITIAL_ENEMIES: 5,
@@ -22,7 +22,7 @@ const TOWER_CONFIGS = {
         range: 2,
         damage: 1,
         cooldown: 5,
-        color: '#44ff00',
+        color: '#8844ff',
         upgradeCost: 100,
         level: 1
     },
@@ -157,9 +157,9 @@ class TowerDefense {
     }
 
     initializeGrid() {
-        for (let y = 0; y < 8; y++) {
+        for (let y = 0; y < GAME_CONFIG.GRID_HEIGHT; y++) {
             this.grid[y] = [];
-            for (let x = 0; x < 10; x++) {
+            for (let x = 0; x < GAME_CONFIG.GRID_WIDTH; x++) {
                 const cell = document.createElement('div');
                 cell.className = 'grid-cell';
                 
@@ -219,17 +219,19 @@ class TowerDefense {
                 if (tower) {
                     const currentCell = this.grid[tower.y][tower.x];
                     const upgradeButton = currentCell.querySelector('.upgrade-button');
+                    const sellButton = currentCell.querySelector('.sell-button');
                     const levelDisplay = currentCell.querySelector('.tower-level');
 
                     // Cacher d'abord tous les autres boutons
-                    document.querySelectorAll('.upgrade-button, .tower-level').forEach(el => {
-                        if (el !== upgradeButton && el !== levelDisplay) {
+                    document.querySelectorAll('.upgrade-button, .sell-button, .tower-level').forEach(el => {
+                        if (el !== upgradeButton && el !== sellButton && el !== levelDisplay) {
                             el.style.display = 'none';
                         }
                     });
 
                     // S'assurer que les boutons sont toujours visibles
                     upgradeButton.style.display = 'block';
+                    if (sellButton) sellButton.style.display = 'block';
                     levelDisplay.style.display = 'block';
                 }
             }
@@ -252,6 +254,14 @@ class TowerDefense {
                     cooldown: 500,
                     color: '#44ff44',
                     upgradeCost: 75,
+                    level: 1
+                },
+                'laser': {
+                    range: 2,
+                    damage: 1,
+                    cooldown: 5,
+                    color: '#8844ff',
+                    upgradeCost: 100,
                     level: 1
                 },
                 'sniper': {
@@ -289,6 +299,7 @@ class TowerDefense {
                 y: y,
                 type: this.selectedTower.type,
                 lastShot: 0,
+                totalInvested: this.selectedTower.cost, // Montant total investi
                 ...config
             };
             
@@ -322,6 +333,21 @@ class TowerDefense {
                 }
             });
             cell.appendChild(upgradeButton);
+            
+            // Ajouter le bouton de vente
+            const sellButton = document.createElement('div');
+            sellButton.className = 'sell-button';
+            sellButton.textContent = `💰 ${Math.floor(tower.totalInvested * 0.75)}€`;
+            sellButton.style.display = 'block';
+            
+            sellButton.addEventListener('click', (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                if (confirm(`Vendre cette tourelle pour ${Math.floor(tower.totalInvested * 0.75)}€ ?`)) {
+                    this.sellTower(tower);
+                }
+            });
+            cell.appendChild(sellButton);
         }
     }
 
@@ -409,8 +435,8 @@ class TowerDefense {
         element.style.top = enemy.y + 'px';
 
         // Barre de vie
-        healthBar.className = 'health-bar';
-        healthFill.className = 'health-fill';
+        healthBar.className = 'enemy-health-bar';
+        healthFill.className = 'enemy-health';
         healthBar.appendChild(healthFill);
         element.appendChild(healthBar);
         
@@ -469,7 +495,7 @@ class TowerDefense {
             }
 
             // Faire perdre une vie quand l'ennemi sort de la grille visible
-            const rightEdge = 10 * 50; // Largeur de la grille en pixels
+            const rightEdge = GAME_CONFIG.GRID_WIDTH * GAME_CONFIG.CELL_SIZE; // Largeur de la grille en pixels
             if (enemy.x >= rightEdge && !enemy.hasCrossedEdge) {
                 enemy.hasCrossedEdge = true;
                 enemy.element.remove();
@@ -693,6 +719,10 @@ class TowerDefense {
                             enemy.slowed = true;
                             enemy.slowTimer = Date.now();
                         });
+                        hits[0].health -= projectile.damage;
+                    } else if (projectile.type === 'laser') {
+                        // Tour laser : dégâts faibles mais très rapides
+                        hits[0].health -= projectile.damage;
                     } else {
                         hits[0].health -= projectile.damage;
                     }
@@ -746,6 +776,7 @@ class TowerDefense {
         console.log('Amélioration de la tour:', tower);  // Debug
         try {
             this.money -= tower.upgradeCost;
+            tower.totalInvested += tower.upgradeCost; // Ajouter le coût d'amélioration
             document.getElementById('money').textContent = this.money;
             
             // Améliorer les stats de la tour (bonus réduits)
@@ -780,6 +811,12 @@ class TowerDefense {
                 upgradeButton.style.cursor = 'not-allowed';
                 upgradeButton.style.color = '#fff';
             }
+            
+            // Mettre à jour le bouton de vente
+            const sellButton = cell.querySelector('.sell-button');
+            if (sellButton) {
+                sellButton.textContent = `💰 ${Math.floor(tower.totalInvested * 0.75)}€`;
+            }
 
             // Ajouter l'effet visuel d'amélioration
             const flash = document.createElement('div');
@@ -804,6 +841,68 @@ class TowerDefense {
             // Rembourser le coût en cas d'erreur
             this.money += tower.upgradeCost;
             document.getElementById('money').textContent = this.money;
+        }
+    }
+
+    sellTower(tower) {
+        try {
+            // Calculer le remboursement (75% du montant total investi)
+            const refund = Math.floor(tower.totalInvested * 0.75);
+            this.money += refund;
+            document.getElementById('money').textContent = this.money;
+            
+            // Trouver et supprimer la tourelle de la liste
+            const towerIndex = this.towers.findIndex(t => t.x === tower.x && t.y === tower.y);
+            if (towerIndex !== -1) {
+                this.towers.splice(towerIndex, 1);
+            }
+            
+            // Nettoyer la cellule
+            const cell = this.grid[tower.y][tower.x];
+            cell.style.backgroundColor = '#446655'; // Couleur de base pour les emplacements
+            cell.classList.remove('has-tower');
+            
+            // Supprimer tous les éléments UI de la tourelle
+            const levelDisplay = cell.querySelector('.tower-level');
+            const upgradeButton = cell.querySelector('.upgrade-button');
+            const sellButton = cell.querySelector('.sell-button');
+            
+            if (levelDisplay) levelDisplay.remove();
+            if (upgradeButton) upgradeButton.remove();
+            if (sellButton) sellButton.remove();
+            
+            // Effet visuel de vente
+            const flash = document.createElement('div');
+            flash.className = 'sell-flash';
+            flash.style.width = '50px';
+            flash.style.height = '50px';
+            flash.style.position = 'absolute';
+            flash.style.top = '0';
+            flash.style.left = '0';
+            flash.style.backgroundColor = '#00ff00';
+            flash.style.animation = 'flash 0.5s ease-out';
+            flash.style.borderRadius = '3px';
+            flash.style.zIndex = '2';
+            flash.style.pointerEvents = 'none';
+            cell.appendChild(flash);
+            
+            // Supprimer l'effet après l'animation
+            setTimeout(() => flash.remove(), 500);
+            
+            // Afficher le montant récupéré
+            const refundText = document.createElement('div');
+            refundText.className = 'combo-text';
+            refundText.textContent = `+${refund}€`;
+            refundText.style.color = '#00ff00';
+            refundText.style.left = (tower.x * 50 + 25) + 'px';
+            refundText.style.top = (tower.y * 50 + 25) + 'px';
+            this.gameGrid.appendChild(refundText);
+            setTimeout(() => refundText.remove(), 1000);
+            
+            console.log(`Tourelle vendue pour ${refund}€`);
+        } catch (error) {
+            console.error('Erreur lors de la vente de la tourelle:', error);
+            alert('Une erreur est survenue lors de la vente de la tourelle');
         }
     }
 
@@ -1060,16 +1159,18 @@ function getRandomInt(min, max) {
 }
 
 TowerDefense.prototype.generateRandomPath = function() {
-    const gridWidth = 10;
-    const gridHeight = 8;
+    const gridWidth = GAME_CONFIG.GRID_WIDTH;
+    const gridHeight = GAME_CONFIG.GRID_HEIGHT;
     const visited = Array(gridHeight).fill().map(() => Array(gridWidth).fill(false));
     const pathDirections = Array(gridHeight).fill().map(() => Array(gridWidth).fill(null));
     
     // Points de contrôle pour assurer une progression vers la droite
     const checkpoints = [
-        {x: 3, y: getRandomInt(2, 5)},      // Premier tiers
-        {x: 6, y: getRandomInt(2, 5)},      // Deuxième tiers
-        {x: 9, y: getRandomInt(2, 5)}       // Point final
+        {x: Math.floor(gridWidth * 0.2), y: getRandomInt(2, gridHeight - 3)},      // Premier tiers
+        {x: Math.floor(gridWidth * 0.4), y: getRandomInt(2, gridHeight - 3)},      // Deuxième tiers
+        {x: Math.floor(gridWidth * 0.6), y: getRandomInt(2, gridHeight - 3)},      // Troisième tiers
+        {x: Math.floor(gridWidth * 0.8), y: getRandomInt(2, gridHeight - 3)},      // Quatrième tiers
+        {x: gridWidth - 1, y: getRandomInt(2, gridHeight - 3)}                     // Point final
     ];
     
     // Choisir un point de départ aléatoire sur le bord gauche
@@ -1180,6 +1281,6 @@ TowerDefense.prototype.generateRandomPath = function() {
     }
     
     // Ajouter juste un point final
-    path.push({x: 10, y: path[path.length - 1].y});
+    path.push({x: gridWidth, y: path[path.length - 1].y});
     return path;
 };

@@ -399,8 +399,7 @@ if (clickablePc) {
         if (clickCount >= 1000) unlockAchievement('click-master');
         // Succès : 1M PC
         if (pcCount >= 1000000) unlockAchievement('millionaire');
-        // Succès légendaire
-        if (Object.values(achievements).filter(Boolean).length >= 2) unlockAchievement('legendary');
+
         // Progress bar
         achievementEls.forEach(el => {
             const id = el.dataset.id;

@@ -24,7 +24,7 @@ $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="index.php">Accueil</a>
             <a href="#classement">Classement Global</a>
             <a href="#nouveautes">Nouveautés</a>
-            <a href="formulaire/formulaire_game.html">Ajouter un jeu</a>
+            <a href="gestion_jeux.php">Gérer les jeux</a>
         </nav>
     </header>
 

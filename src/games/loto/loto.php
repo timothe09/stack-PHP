@@ -83,9 +83,28 @@
             margin-top: 20px;
             color: #7f8c8d;
         }
+        
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.2s;
+        }
+        
+        .home-button:hover {
+            background-color: #2980b9;
+        }
     </style>
 </head>
 <body>
+    <a href="../../index.php" class="home-button">← Retour à l'accueil</a>
     <div class="container">
         <h1>Tirage du Loto</h1>
         

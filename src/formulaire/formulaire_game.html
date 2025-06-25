@@ -14,6 +14,24 @@
             align-items: center;
             height: 100vh;
         }
+        
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.2s;
+        }
+        
+        .home-button:hover {
+            background-color: #2980b9;
+        }
 
         .form-container {
             background-color: #ffffff;
@@ -65,11 +83,32 @@
         button:hover {
             background-color: #0056b3;
         }
+        
+        .error-message {
+            color: #e74c3c;
+            background-color: #fadbd8;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+        
+        .success-message {
+            color: #27ae60;
+            background-color: #d4efdf;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
     </style>
 </head>
 <body>
+    <a href="../index.php" class="home-button">← Retour à l'accueil</a>
     <div class="form-container">
         <h2>Formulaire de jeux</h2>
+        <div id="error-message" class="error-message"></div>
+        <div id="success-message" class="success-message"></div>
         <form action="formulaire_game.php" method="POST">
             <label for="nom_de_jeux">Nom de jeux:</label>
             <input type="text" id="nom_du_jeux" name="nom_du_jeux" required>
@@ -83,5 +122,32 @@
             <button type="submit">Envoyer</button>
         </form>
     </div>
+
+    <script>
+        // Fonction pour récupérer les paramètres de l'URL
+        function getUrlParameter(name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(location.search);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+
+        // Vérifier s'il y a un message d'erreur dans l'URL
+        window.onload = function() {
+            var error = getUrlParameter('error');
+            var success = getUrlParameter('success');
+            var game = getUrlParameter('game');
+            
+            if (error === 'duplicate' && game) {
+                var errorMessage = document.getElementById('error-message');
+                errorMessage.textContent = 'Un jeu avec le nom "' + game + '" existe déjà dans la base de données. Veuillez choisir un autre nom.';
+                errorMessage.style.display = 'block';
+            } else if (success === 'true' && game) {
+                var successMessage = document.getElementById('success-message');
+                successMessage.textContent = 'Le jeu "' + game + '" a été ajouté avec succès à la base de données.';
+                successMessage.style.display = 'block';
+            }
+        };
+    </script>
 </body>
 </html>

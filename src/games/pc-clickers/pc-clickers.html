@@ -5,8 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PC Clicker</title>
     <link rel="stylesheet" href="./pc-clickers.css">
+    <style>
+        .home-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.2s;
+        }
+        .home-button:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
+    <a href="../../index.php" class="home-button">← Retour à l'accueil</a>
     <div class="game-container">
         <!-- Stats -->
         <div class="stats">

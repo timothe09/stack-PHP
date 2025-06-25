@@ -12,24 +12,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $description = htmlspecialchars($_POST['description']);
         $path = htmlspecialchars($_POST['path']);
 
-        // Insertion dans la base de données
-        try {
-            // Remplacez 'messages' par 'utilisateurs' si c'est le vrai nom de la table
+        // Vérifier si un jeu avec le même nom existe déjà
+        $check_sql = "SELECT COUNT(*) FROM `games` WHERE `nom_du_jeux` = ?";
+        $check_stmt = $pdo->prepare($check_sql);
+        $check_stmt->execute([$nom_du_jeux]);
+        $jeu_existe = $check_stmt->fetchColumn() > 0;
+
+        if ($jeu_existe) {
+            // Le jeu existe déjà, rediriger vers le formulaire avec un message d'erreur
+            header("Location: formulaire_game.html?error=duplicate&game=" . urlencode($nom_du_jeux));
+            exit;
+        } else {
+            try {
+            // Le jeu n'existe pas, procéder à l'insertion
             $sql = "INSERT INTO `games` (`nom_du_jeux`, `description`, `path`,`created_at`) VALUES (?, ?, ?, NOW())";
             $stmt = $pdo->prepare($sql);
             $stmt->execute([$nom_du_jeux, $description, $path]);
 
-            // Affichage des données
-            echo "<h2>Données reçues :</h2>";
-            echo "nom_du_jeux : " . $nom_du_jeux . "<br>";
-            echo "description : " . $description . "<br>";
-            echo "path : " . $path . "<br>";
-        } catch (PDOException $e) {
-            echo "<h2>Erreur lors de l'enregistrement : " . htmlspecialchars($e->getMessage()) . "</h2>";
+            // Rediriger vers le formulaire avec un message de succès
+            header("Location: formulaire_game.html?success=true&game=" . urlencode($nom_du_jeux));
+            exit;
+            }
+            catch (PDOException $e) {
+                echo "<h2>Erreur lors de l'enregistrement : " . htmlspecialchars($e->getMessage()) . "</h2>";
+            }
         }
     } else {
         echo "<h2>Veuillez remplir tous les champs du formulaire.</h2>";
-    }
+    }  
 } else {
     echo "Méthode non autorisée.";
 }

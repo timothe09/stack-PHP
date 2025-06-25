@@ -396,7 +396,8 @@ class TowerDefense {
             slowed: false,
             slowTimer: 0,
             hasCrossedEdge: false,
-            element
+            element,
+            healthBar: healthFill
         };
 
         // Style de l'ennemi

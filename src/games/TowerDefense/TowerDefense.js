@@ -373,7 +373,7 @@ class TowerDefense {
         if (this.level % 5 === 0) { // Niveau boss
             this.enemiesInWave = 1; // Un seul boss
             this.spawnInterval = 1000; // Apparition rapide
-            this.money += 200 + (this.level * 20); // Plus d'argent pour les niveaux boss
+            this.money += 100 + (this.level * 20); // Plus d'argent pour les niveaux boss
             
             // Afficher un message d'avertissement
             const warning = document.createElement('div');
@@ -412,8 +412,8 @@ class TowerDefense {
         
         // Configuration de l'ennemi
         const enemy = {
-            x: this.path[0].x * GAME_CONFIG.CELL_SIZE + 25,
-            y: this.path[0].y * GAME_CONFIG.CELL_SIZE + 25,
+            x: this.path[0].x * GAME_CONFIG.CELL_SIZE + 50,
+            y: this.path[0].y * GAME_CONFIG.CELL_SIZE + 50,
             type,
             health: maxHealth,
             maxHealth,
@@ -549,7 +549,7 @@ class TowerDefense {
             enemy.element.style.top = Math.round(enemy.y) + 'px';
             
             // Faire disparaître progressivement l'ennemi après la grille
-            if (enemy.x > 500) {
+            if (enemy.x > (GAME_CONFIG.GRID_WIDTH* GAME_CONFIG.CELL_SIZE)) {
                 const opacity = Math.max(0, 1 - (enemy.x - 500) / 50);
                 enemy.element.style.opacity = opacity;
             }
@@ -752,7 +752,7 @@ class TowerDefense {
         if (hitEnemies.length > 0) {
             if (projectile.type === 'splash') {
                 // Dégâts de zone optimisés
-                const splashRange = 50;
+                const splashRange = 60;
                 for (const enemy of this.enemies) {
                     const dx = enemy.x - projectile.targetX;
                     const dy = enemy.y - projectile.targetY;

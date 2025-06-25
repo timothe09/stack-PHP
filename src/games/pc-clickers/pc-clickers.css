@@ -1,289 +1,5 @@
 /* Corps du document inchangé */
 
-/* Animation de fond */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-    background-size: 400% 400%;
-    animation: gradient 15s ease infinite;
-    font-family: 'Arial', sans-serif;
-    min-height: 100vh;
-    color: white;
-}
-
-@keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.08); }
-    100% { transform: scale(1); }
-}
-
-/* Styles du conteneur de jeu */
-.game-container {
-    position: relative;
-    width: 100%;
-    max-width: 800px;
-    min-height: 600px;
-    margin: 40px auto 0 auto;
-    border-radius: 20px;
-    overflow: hidden;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(to bottom, #2c3e50, #3498db);
-    padding: 32px 24px 24px 24px;
-}
-
-/* Styles des statistiques */
-.stats {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    background: rgba(0, 0, 0, 0.6);
-    border-radius: 12px;
-    padding: 18px 0;
-    margin-bottom: 24px;
-    font-size: 1.3em;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    min-width: 200px;
-}
-
-.stats div {
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 2px 2px 2px rgba(0,0,0,0.5);
-}
-
-/* Styles du menu principal */
-.main-menu {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin-bottom: 24px;
-}
-
-.menu-btn {
-    background: linear-gradient(90deg, #ee7752 0%, #23a6d5 100%);
-    color: #fff;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 32px;
-    font-size: 1.1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
-    text-shadow: 1px 1px 2px #0008;
-}
-
-.menu-btn.active, .menu-btn:hover {
-    background: linear-gradient(90deg, #FFD700 0%, #e73c7e 100%);
-    color: #232526;
-    transform: scale(1.07);
-}
-
-/* Styles de la section de jeu */
-.game-section {
-    transition: opacity 0.3s;
-}
-
-.game-section:not(.active) {
-    display: none;
-    opacity: 0;
-}
-
-/* Styles de la zone cliquable */
-.click-area {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 32px;
-}
-
-.clickable-pc {
-    background: linear-gradient(145deg, #232526 60%, #23d5ab 100%);
-    border-radius: 50%;
-    width: 160px;
-    height: 160px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 8px 32px 0 rgba(76,175,80,0.18);
-    cursor: pointer;
-    transition: transform 0.1s, box-shadow 0.2s;
-    position: relative;
-    user-select: none;
-    animation: pulse 2s infinite;
-}
-
-.clickable-pc:active {
-    transform: scale(0.95);
-    box-shadow: 0 2px 8px 0 rgba(76,175,80,0.18);
-}
-
-.clickable-pc .emoji {
-    font-size: 3.5em;
-    filter: drop-shadow(0 2px 8px #FFD70088);
-    margin-bottom: 8px;
-}
-
-.pc-text {
-    font-size: 1.1em;
-    color: #FFD700;
-    font-weight: bold;
-    letter-spacing: 1px;
-    text-shadow: 0 1px 6px #0008;
-}
-
-/* Styles de la boutique */
-.shop {
-    margin-top: 24px;
-    background: rgba(0, 0, 0, 0.5);
-    border-radius: 12px;
-    padding: 18px 12px 12px 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-}
-
-.shop-categories {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 18px;
-    justify-content: center;
-}
-
-.cat-btn {
-    background: linear-gradient(90deg, #23a6d5 0%, #23d5ab 100%);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 22px;
-    font-size: 1em;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-}
-
-.cat-btn.active, .cat-btn:hover {
-    background: linear-gradient(90deg, #FFD700 0%, #e73c7e 100%);
-    color: #232526;
-    transform: scale(1.07);
-}
-
-.shop-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 18px;
-    justify-content: center;
-}
-
-.shop-items.hidden {
-    display: none;
-}
-
-.shop-item {
-    background: rgba(255,255,255,0.07);
-    border-radius: 10px;
-    padding: 16px 18px;
-    min-width: 180px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    position: relative;
-}
-
-.shop-item:hover {
-    background: rgba(255,255,255,0.18);
-    transform: scale(1.04);
-}
-
-.shop-item .emoji {
-    font-size: 2.2em;
-    margin-bottom: 6px;
-    cursor: pointer;
-    position: relative;
-    z-index: 11;
-}
-
-.shop-item .item-info {
-    display: none;
-    position: absolute;
-    left: 50%;
-    top: 110%;
-    transform: translateX(-50%);
-    min-width: 180px;
-    background: rgba(44, 62, 80, 0.98);
-    color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 2px 12px #0007;
-    padding: 14px 18px;
-    z-index: 10;
-    font-size: 0.98em;
-    text-align: left;
-    pointer-events: none;
-    white-space: normal;
-}
-
-.shop-item .emoji:hover + .item-info,
-.shop-item .emoji:focus + .item-info {
-    display: block;
-}
-
-.shop-item .owned {
-    position: absolute;
-    top: 10px;
-    right: 14px;
-    background: #FFD700;
-    color: #232526;
-    border-radius: 50%;
-    width: 28px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 1em;
-    box-shadow: 0 1px 4px #0003;
-}
-
-/* Styles des contrôles de sauvegarde */
-.save-controls {
-    display: flex;
-    justify-content: flex-end;
-    gap: 14px;
-    margin-top: 28px;
-}
-
-.save-controls button {
-    background: linear-gradient(90deg, #ee7752 0%, #23a6d5 100%);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 10px 28px;
-    font-size: 1em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
-    box-shadow: 0 2px 8px rgba(33,150,243,0.08);
-}
-
-.save-controls button:hover {
-    background: linear-gradient(90deg, #FFD700 0%, #e73c7e 100%);
-    color: #232526;
-    transform: scale(1.07);
-}
-
 /* Styles des succès */
 .achievements-section {
     background: rgba(0, 0, 0, 0.3);
@@ -425,13 +141,18 @@ body {
 
 .achievement-popup .icon {
     font-size: 2em;
-    animation: pulse 0.5s ease-out;
+    animation: bounce 0.5s ease-out;
 }
 
 .achievement-popup .reward {
     font-size: 0.9em;
     color: #FFD700;
     margin-top: 5px;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.2); }
 }
 
 @keyframes slide-in {
@@ -442,6 +163,41 @@ body {
 @keyframes fade-out {
     from { transform: translateX(0); opacity: 1; }
     to { transform: translateX(120%); opacity: 0; }
+}
+
+/* Styles de la boutique */
+.shop-item {
+    position: relative;
+}
+
+.shop-item .item-info {
+    display: none;
+    position: absolute;
+    left: 50%;
+    top: 110%;
+    transform: translateX(-50%);
+    min-width: 180px;
+    background: rgba(44, 62, 80, 0.98);
+    color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 12px #0007;
+    padding: 14px 18px;
+    z-index: 10;
+    font-size: 0.98em;
+    text-align: left;
+    pointer-events: none;
+    white-space: normal;
+}
+
+.shop-item .emoji:hover + .item-info,
+.shop-item .emoji:focus + .item-info {
+    display: block;
+}
+
+.shop-item .emoji {
+    cursor: pointer;
+    position: relative;
+    z-index: 11;
 }
 
 /* Responsive */

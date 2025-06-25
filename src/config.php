@@ -1,6 +1,6 @@
 <?php
 // Configuration de la base de données
-$db_host = 'localhost';
+$db_host = 'mysql';
 $db_name = 'games_db';
 $db_user = 'root';
 $db_pass = 'root_password';

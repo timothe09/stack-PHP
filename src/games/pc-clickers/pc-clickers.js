@@ -182,16 +182,6 @@ class PCClicker {
         // Bonus de succès
         this.pcPerClick *= 1.1;
         this.updateDisplay();
-
-        // Ajout : clic sur le popup affiche les succès et masque les item-info
-        popup.onclick = () => {
-            // Affiche la section succès
-            this.switchSection('achievements');
-            // Masque toutes les infobulles .item-info
-            document.querySelectorAll('.item-info').forEach(info => {
-                info.style.display = 'none';
-            });
-        };
     }
 
     switchSection(section) {
@@ -201,15 +191,6 @@ class PCClicker {
 
         document.querySelector('.game-section').classList.toggle('active', section === 'game');
         document.querySelector('.achievements-section').classList.toggle('active', section === 'achievements');
-
-        // Ajout : si on clique sur "Jeu", masque la section succès
-        if (section === 'game') {
-            document.querySelector('.achievements-section').classList.remove('active');
-            document.querySelector('.achievements-section').classList.add('hidden');
-        } else if (section === 'achievements') {
-            document.querySelector('.achievements-section').classList.add('active');
-            document.querySelector('.achievements-section').classList.remove('hidden');
-        }
     }
 
     switchCategory(category) {

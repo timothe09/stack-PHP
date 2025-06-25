@@ -24,6 +24,7 @@ $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="index.php">Accueil</a>
             <a href="#classement">Classement Global</a>
             <a href="#nouveautes">Nouveautés</a>
+            <a href="formulaire/formulaire_game.html">Ajouter un jeu</a>
         </nav>
     </header>
 
@@ -31,7 +32,7 @@ $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
         <div class="games-container">
             <?php foreach($games as $game): ?>
                 <div class="game-card">
-                    <h2><?php echo htmlspecialchars($game['title']); ?></h2>
+                    <h2><?php echo htmlspecialchars($game['nom_du_jeux']); ?></h2>
                     <p><?php echo htmlspecialchars($game['description']); ?></p>
                     <div class="game-buttons">
                         <a href="<?php echo htmlspecialchars($game['path']); ?>" class="play-button">Jouer</a>

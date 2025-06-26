@@ -1,7 +1,13 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: formulaire/formulaire_de_connexion.php');
+    exit;
+}
+
 require_once 'config.php';
 
-// Récupération des jeux depuis la base de données
 $stmt = $pdo->query("SELECT * FROM games ORDER BY created_at DESC");
 $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
@@ -16,6 +22,34 @@ $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            gap: 15px;
+        }
+        .user-info span {
+            color: white;
+            font-weight: 500;
+        }
+        .logout-button {
+            background-color: #ff4757;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        .logout-button:hover {
+            background-color: #ff6b81;
+        }
+        .nav {
+            display: flex;
+            align-items: center;
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -25,6 +59,10 @@ $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
             <a href="#classement">Classement Global</a>
             <a href="#nouveautes">Nouveautés</a>
             <a href="gestion_jeux.php">Gérer les jeux</a>
+            <div class="user-info">
+                <span>Bonjour, <?php echo htmlspecialchars($_SESSION['user_nom']); ?></span>
+                <a href="formulaire/deconnexion.php" class="logout-button">Déconnexion</a>
+            </div>
         </nav>
     </header>
 

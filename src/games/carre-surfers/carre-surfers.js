@@ -12,8 +12,12 @@ class CarreSurfers {
         // Configuration du jeu
         this.gameSpeed = 5;
         this.score = 0;
-        this.highScore = localStorage.getItem('highScore') || 0;
+        this.highScore = 0;
         this.gameOver = false;
+        this.gameId = document.getElementById('game_id') ? document.getElementById('game_id').value : null;
+        
+        // Charger les meilleurs scores
+        this.loadHighScores();
         
         // Système de vies
         this.lives = 3;
@@ -460,18 +464,260 @@ class CarreSurfers {
         return distance < (this.player.size/2 + collectible.size/2);
     }
 
-    endGame() {
-        this.gameOver = true;
-        if (this.score > this.highScore) {
-            this.highScore = this.score;
-            localStorage.setItem('highScore', this.highScore);
+    async loadHighScores() {
+        try {
+            // Mettre à jour le lien vers les high-scores avec l'ID correct
+            const scoresButton = document.querySelector('.scores-button');
+            if (scoresButton && this.gameId) {
+                scoresButton.href = `../../scores.php?game_id=${this.gameId}`;
+            }
+            
+            // Charger les meilleurs scores pour ce jeu
+            if (this.gameId) {
+                const scoresResponse = await fetch(`../../api/get_high_scores.php?game_id=${this.gameId}`);
+                const scoresData = await scoresResponse.json();
+                
+                if (scoresData.success && scoresData.scores.length > 0) {
+                    this.highScore = scoresData.scores[0].score;
+                    document.getElementById('highScore').textContent = this.highScore;
+                } else {
+                    this.highScore = 0;
+                    document.getElementById('highScore').textContent = this.highScore;
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors du chargement des high scores:', error);
         }
-        document.getElementById('finalScore').textContent = this.score;
-        document.getElementById('maxCombo').textContent = this.maxCombo;
-        document.getElementById('gameOver').classList.remove('hidden');
     }
 
-    restart() {
+    endGame() {
+        this.gameOver = true;
+        
+        // Mettre à jour l'affichage du score final
+        document.getElementById('finalScore').textContent = this.score;
+        document.getElementById('maxCombo').textContent = this.maxCombo;
+        
+        // Créer une modal pour la saisie du nom si le score est suffisamment élevé
+        if (this.score > 0) {
+            this.showScoreSubmissionModal();
+        } else {
+            document.getElementById('gameOver').classList.remove('hidden');
+        }
+    }
+    
+    showScoreSubmissionModal() {
+        // Créer une modal pour la saisie du nom
+        const modal = document.createElement('div');
+        modal.className = 'game-over-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h2>🎮 Partie Terminée !</h2>
+                <p><strong>Score final :</strong> ${this.score.toLocaleString()}</p>
+                <p><strong>Combo maximum :</strong> x${this.maxCombo}</p>
+                ${this.score > this.highScore ? '<p class="new-record">🏆 Nouveau Record !</p>' : ''}
+                <div class="name-input-section">
+                    <label for="playerName">Entrez votre nom pour sauvegarder votre score :</label>
+                    <input type="text" id="playerName" maxlength="50" placeholder="Votre nom ou pseudo">
+                    <div class="modal-buttons">
+                        <button id="saveScore" class="save-btn">💾 Sauvegarder</button>
+                        <button id="skipSave" class="skip-btn">⏭️ Passer</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        // Styles pour la modal
+        const style = document.createElement('style');
+        style.textContent = `
+            .game-over-modal {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 10000;
+                font-family: Arial, sans-serif;
+            }
+            .modal-content {
+                background: white;
+                padding: 30px;
+                border-radius: 15px;
+                text-align: center;
+                max-width: 400px;
+                width: 90%;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            }
+            .modal-content h2 {
+                color: #333;
+                margin-bottom: 20px;
+                font-size: 24px;
+            }
+            .modal-content p {
+                margin: 10px 0;
+                font-size: 16px;
+                color: #555;
+            }
+            .new-record {
+                color: #ff6b35 !important;
+                font-weight: bold;
+                font-size: 18px !important;
+                animation: pulse 1.5s infinite;
+            }
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+            .name-input-section {
+                margin-top: 25px;
+            }
+            .name-input-section label {
+                display: block;
+                margin-bottom: 10px;
+                font-weight: bold;
+                color: #333;
+            }
+            #playerName {
+                width: 100%;
+                padding: 12px;
+                border: 2px solid #ddd;
+                border-radius: 8px;
+                font-size: 16px;
+                margin-bottom: 20px;
+                box-sizing: border-box;
+            }
+            #playerName:focus {
+                border-color: #4CAF50;
+                outline: none;
+            }
+            .modal-buttons {
+                display: flex;
+                gap: 10px;
+                justify-content: center;
+            }
+            .save-btn, .skip-btn {
+                padding: 12px 20px;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s;
+            }
+            .save-btn {
+                background-color: #4CAF50;
+                color: white;
+            }
+            .save-btn:hover {
+                background-color: #45a049;
+            }
+            .save-btn:disabled {
+                background-color: #cccccc;
+                cursor: not-allowed;
+            }
+            .skip-btn {
+                background-color: #f44336;
+                color: white;
+            }
+            .skip-btn:hover {
+                background-color: #da190b;
+            }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(modal);
+        
+        // Focus sur le champ de saisie
+        const nameInput = document.getElementById('playerName');
+        nameInput.focus();
+        
+        // Gestion des événements
+        const saveBtn = document.getElementById('saveScore');
+        const skipBtn = document.getElementById('skipSave');
+        
+        const saveScore = async () => {
+            const playerName = nameInput.value.trim();
+            
+            if (!playerName) {
+                alert('Veuillez entrer votre nom !');
+                nameInput.focus();
+                return;
+            }
+            
+            if (!this.gameId) {
+                alert('Erreur : ID du jeu non trouvé');
+                this.restartGame();
+                return;
+            }
+            
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Sauvegarde...';
+            
+            try {
+                const response = await fetch('../../api/save_score.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        game_id: parseInt(this.gameId),
+                        player_name: playerName,
+                        score: parseInt(this.score)
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Réponse de l\'API:', data); // Debug
+                
+                if (data.success) {
+                    alert(`🎉 Score sauvegardé avec succès !\n\n` +
+                          `Joueur : ${playerName}\n` +
+                          `Score : ${this.score.toLocaleString()}\n` +
+                          `Rang : ${data.rank}${this.getOrdinalSuffix(data.rank)}`);
+                } else {
+                    alert('❌ Erreur lors de la sauvegarde : ' + (data.error || 'Erreur inconnue'));
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur de connexion lors de la sauvegarde');
+            }
+            
+            this.restartGame();
+        };
+        
+        const skipSave = () => {
+            if (confirm('Êtes-vous sûr de ne pas vouloir sauvegarder votre score ?')) {
+                this.restartGame();
+            }
+        };
+        
+        // Événements des boutons
+        saveBtn.addEventListener('click', saveScore);
+        skipBtn.addEventListener('click', skipSave);
+        
+        // Sauvegarder avec Entrée
+        nameInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                saveScore();
+            }
+        });
+    }
+    
+    getOrdinalSuffix(num) {
+        return num === 1 ? 'er' : 'ème';
+    }
+
+    restartGame() {
+        // Supprimer la modal si elle existe
+        const modal = document.querySelector('.game-over-modal');
+        if (modal) {
+            modal.remove();
+        }
+        
         this.score = 0;
         this.lives = 3;
         this.combo = 1;
@@ -504,6 +750,10 @@ class CarreSurfers {
         });
         
         this.updateUI();
+    }
+    
+    restart() {
+        this.restartGame();
     }
 
     gameLoop() {

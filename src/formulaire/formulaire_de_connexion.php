@@ -121,9 +121,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background-color: #f8d7da;
             color: #721c24;
         }
-        .register-link {
+        .register-link, .forgot-password-link {
             text-align: center;
             margin-top: 15px;
+        }
+        .forgot-password-link a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        .forgot-password-link a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -153,6 +160,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <button type="submit" class="btn">Se connecter</button>
                 </div>
             </form>
+            
+            <div class="forgot-password-link">
+                <a href="mot_de_passe_oublie.php">Mot de passe oublié ?</a>
+            </div>
         <?php endif; ?>
         
         <div class="register-link">

@@ -7,6 +7,16 @@ $date_naissance = '';
 $message = '';
 $success = false;
 
+// Vérifier si la colonne date_naissance existe dans la table connexion_games
+try {
+    $stmt = $pdo->prepare("SHOW COLUMNS FROM connexion_games LIKE 'date_naissance'");
+    $stmt->execute();
+    $date_naissance_exists = $stmt->rowCount() > 0;
+} catch (PDOException $e) {
+    $date_naissance_exists = false;
+    error_log("Erreur lors de la vérification de la colonne date_naissance : " . $e->getMessage());
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nom = trim($_POST['nom'] ?? '');
     $email = trim($_POST['email'] ?? '');
@@ -26,9 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "L'adresse email n'est pas valide";
     }
     
-    if (empty($date_naissance)) {
+    if ($date_naissance_exists && empty($date_naissance)) {
         $errors[] = "La date de naissance est obligatoire";
-    } else {
+    } elseif ($date_naissance_exists) {
         $date = DateTime::createFromFormat('Y-m-d', $date_naissance);
         if (!$date || $date->format('Y-m-d') !== $date_naissance) {
             $errors[] = "Le format de la date de naissance n'est pas valide";
@@ -55,9 +65,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if (empty($errors)) {
         try {
-            $stmt = $pdo->prepare("INSERT INTO connexion_games (nom, email, date_naissance, mot_de_passe) VALUES (?, ?, ?, ?)");
-            $hashed_password = password_hash($mot_de_passe, PASSWORD_DEFAULT);
-            $stmt->execute([$nom, $email, $date_naissance, $hashed_password]);
+            if ($date_naissance_exists) {
+                $stmt = $pdo->prepare("INSERT INTO connexion_games (nom, email, date_naissance, mot_de_passe) VALUES (?, ?, ?, ?)");
+                $hashed_password = password_hash($mot_de_passe, PASSWORD_DEFAULT);
+                $stmt->execute([$nom, $email, $date_naissance, $hashed_password]);
+            } else {
+                $stmt = $pdo->prepare("INSERT INTO connexion_games (nom, email, mot_de_passe) VALUES (?, ?, ?)");
+                $hashed_password = password_hash($mot_de_passe, PASSWORD_DEFAULT);
+                $stmt->execute([$nom, $email, $hashed_password]);
+            }
             
             $success = true;
             $message = "Votre compte a été créé avec succès. Vous pouvez maintenant vous connecter.";
@@ -148,11 +164,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: center;
             margin-top: 15px;
         }
+        .notice {
+            background-color: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Inscription</h1>
+        
+        <?php if (!$date_naissance_exists): ?>
+            <div class="notice">
+                <strong>Attention :</strong> La fonctionnalité de récupération de mot de passe n'est pas disponible car la colonne date_naissance n'existe pas dans la base de données. Veuillez exécuter le script update_database.php pour activer cette fonctionnalité.
+            </div>
+        <?php endif; ?>
         
         <?php if (!empty($message)): ?>
             <div class="message <?php echo $success ? 'success' : 'error'; ?>">
@@ -172,10 +201,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <input type="email" id="email" name="email" value="<?php echo escape_html($email); ?>" required>
                 </div>
                 
+                <?php if ($date_naissance_exists): ?>
                 <div class="form-group">
                     <label for="date_naissance">Date de naissance</label>
                     <input type="date" id="date_naissance" name="date_naissance" value="<?php echo escape_html($date_naissance); ?>" required>
                 </div>
+                <?php endif; ?>
                 
                 <div class="form-group">
                     <label for="mot_de_passe">Mot de passe</label>

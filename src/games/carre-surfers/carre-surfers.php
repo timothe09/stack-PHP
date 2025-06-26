@@ -30,9 +30,25 @@ if (!isset($_SESSION['user_id'])) {
         .home-button:hover {
             background-color: #2980b9;
         }
-        .user-info {
+        .scores-button {
             position: fixed;
             top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #f39c12;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+            transition: background-color 0.2s;
+        }
+        .scores-button:hover {
+            background-color: #e67e22;
+        }
+        .user-info {
+            position: fixed;
+            top: 60px;
             right: 20px;
             padding: 10px;
             background-color: rgba(0, 0, 0, 0.5);
@@ -45,9 +61,11 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 <body>
     <a href="../../index.php" class="home-button">← Retour à l'accueil</a>
+    <a href="../../scores.php?game_id=2" class="scores-button">🏆 High Scores</a>
     <div class="user-info">
         Connecté en tant que : <?php echo htmlspecialchars($_SESSION['user_nom']); ?>
     </div>
+    <input type="hidden" id="game_id" value="2"/>
     <div class="game-container">
         <div class="hud">
             <div class="score">Score: <span id="score">0</span></div>

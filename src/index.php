@@ -74,7 +74,6 @@ $games = $stmt->fetchAll(PDO::FETCH_ASSOC);
                     <p><?php echo htmlspecialchars($game['description']); ?></p>
                     <div class="game-buttons">
                         <a href="<?php echo htmlspecialchars($game['path']); ?>" class="play-button">Jouer</a>
-                        <a href="scores.php?game_id=<?php echo $game['id']; ?>" class="scores-button">High Scores</a>
                     </div>
                 </div>
             <?php endforeach; ?>

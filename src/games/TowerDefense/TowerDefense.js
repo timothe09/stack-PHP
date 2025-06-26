@@ -541,8 +541,22 @@ class TowerDefense {
                 enemy.pathIndex = Math.min(enemy.pathIndex + 1, this.path.length - 1);
             }
             
-            // Mettre à jour la barre de vie
-            enemy.healthBar.style.width = `${(enemy.health / enemy.maxHealth) * 100}%`;
+            // Mettre à jour la barre de vie avec une transition fluide
+            const healthPercent = (enemy.health / enemy.maxHealth) * 100;
+            
+            // Forcer le recalcul du DOM pour assurer que la transition s'applique
+            requestAnimationFrame(() => {
+                enemy.healthBar.style.width = `${healthPercent}%`;
+                
+                // Ajuster la couleur en fonction de la santé
+                if (healthPercent < 30) {
+                    enemy.healthBar.style.backgroundColor = '#ff4444'; // Rouge quand peu de vie
+                } else if (healthPercent < 60) {
+                    enemy.healthBar.style.backgroundColor = '#ffff44'; // Jaune quand vie moyenne
+                } else {
+                    enemy.healthBar.style.backgroundColor = '#44ff44'; // Vert quand beaucoup de vie
+                }
+            });
             
             // Toujours mettre à jour la position visuelle
             enemy.element.style.left = Math.round(enemy.x) + 'px';

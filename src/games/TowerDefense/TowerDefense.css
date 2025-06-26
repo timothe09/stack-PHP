@@ -163,7 +163,8 @@ body {
     height: 100%;
     background-color: #44ff44;
     border-radius: 2px;
-    transition: width 0.2s;
+    transition: width 0.3s ease-out, background-color 0.3s;
+    box-shadow: 0 0 3px currentColor;
 }
 
 .projectile {

@@ -1,3 +1,11 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../../formulaire/formulaire_de_connexion.php');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -101,10 +109,25 @@
         .home-button:hover {
             background-color: #2980b9;
         }
+        
+        .user-info {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border-radius: 4px;
+            z-index: 1000;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
     <a href="../../index.php" class="home-button">← Retour à l'accueil</a>
+    <div class="user-info">
+        Connecté en tant que : <?php echo htmlspecialchars($_SESSION['user_nom']); ?>
+    </div>
     <div class="container">
         <h1>Tirage du Loto</h1>
         

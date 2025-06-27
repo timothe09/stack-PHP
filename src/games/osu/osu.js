@@ -1,5 +1,13 @@
+/**
+ * Jeu OSU! - Version web
+ * Un jeu de rythme inspiré du célèbre jeu OSU!
+ */
 class OsuGame {
+    /**
+     * Initialisation du jeu
+     */
     constructor() {
+        // Configuration du canvas
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
         this.setupCanvas();
@@ -71,18 +79,21 @@ class OsuGame {
         // Effets visuels
         this.hitFeedbacks = [];
         
-        // Audio (simples bips pour les hits et miss)
+        // Audio
         this.sounds = {
             hit: null,
             miss: null,
             levelUp: null
         };
         
-        // Événements
+        // Initialisation
         this.setupEventListeners();
         this.startCountdown();
     }
 
+    /**
+     * Configuration du canvas et adaptation à la taille de l'écran
+     */
     setupCanvas() {
         // Ajuster la taille du canvas en fonction de la taille de son conteneur
         const container = this.canvas.parentElement;
@@ -104,6 +115,9 @@ class OsuGame {
         this.ctx.scale(dpr, dpr);
     }
 
+    /**
+     * Configuration des événements (clics, touches)
+     */
     setupEventListeners() {
         // Événement de clic sur le canvas
         this.canvas.addEventListener('click', (e) => {
@@ -127,6 +141,9 @@ class OsuGame {
         });
     }
     
+    /**
+     * Change le mode de jeu actuel
+     */
     changeGameMode() {
         if (!this.gameStarted || this.gameOver) return;
         
@@ -159,6 +176,9 @@ class OsuGame {
         }
     }
 
+    /**
+     * Démarre le compte à rebours avant le début du jeu
+     */
     startCountdown() {
         const countdownElement = document.getElementById('countdown');
         let count = 3;
@@ -183,7 +203,11 @@ class OsuGame {
         updateCountdown();
     }
 
+    /**
+     * Démarre le jeu après le compte à rebours
+     */
     startGame() {
+        // Réinitialiser les variables du jeu
         this.gameStarted = true;
         this.gameOver = false;
         this.score = 0;
@@ -195,9 +219,13 @@ class OsuGame {
         this.accuracy = 100;
         this.level = 1;
         this.difficulty = 1;
+        
+        // Réinitialiser les timers
         this.lastDifficultyIncrease = performance.now();
         this.lastCircleTime = performance.now();
         this.lastPowerupTime = performance.now();
+        
+        // Vider les tableaux
         this.circles = [];
         this.powerups = [];
         this.activePowerups = [];
@@ -208,10 +236,14 @@ class OsuGame {
         document.getElementById('gameMode').textContent = this.gameModes[this.currentGameMode];
         document.getElementById('level').textContent = this.level;
         
+        // Mettre à jour l'interface et démarrer la boucle de jeu
         this.updateUI();
         this.gameLoop();
     }
 
+    /**
+     * Boucle principale du jeu
+     */
     gameLoop() {
         if (this.gameOver) return;
         
@@ -228,22 +260,12 @@ class OsuGame {
             this.levelUp();
         }
         
-        // Générer de nouveaux cercles
+        // Générer et mettre à jour les éléments du jeu
         this.generateCircle(now);
-        
-        // Générer des powerups
         this.generatePowerup(now);
-        
-        // Mettre à jour les cercles existants
         this.updateCircles(now);
-        
-        // Mettre à jour les powerups
         this.updatePowerups(now);
-        
-        // Mettre à jour les powerups actifs
         this.updateActivePowerups(now);
-        
-        // Mettre à jour les effets visuels
         this.updateHitFeedbacks();
         
         // Diminuer la santé avec le temps (sauf si un powerup l'empêche)
@@ -258,12 +280,10 @@ class OsuGame {
                 this.endGame();
                 return;
             } else {
-                // Mode infini: donner une seconde chance avec une pénalité de score
+                // Mode infini: régénération silencieuse
                 this.health = 30;
                 this.score = Math.max(0, this.score - 1000);
                 this.combo = 0;
-                
-                // Mode infini: régénération silencieuse
             }
         }
         
@@ -274,14 +294,18 @@ class OsuGame {
         requestAnimationFrame(() => this.gameLoop());
     }
 
+    /**
+     * Génère un nouveau cercle
+     */
     generateCircle(now) {
-        // Réduire l'intervalle si le powerup slowTime est actif
+        // Calculer l'intervalle entre les cercles en fonction de la difficulté
         let interval = Math.max(this.minCircleInterval, this.circleInterval - (this.difficulty - 1) * 300);
         if (this.hasPowerup('slowTime')) {
             interval *= 1.5; // Ralentir l'apparition des cercles
         }
         
         if (now - this.lastCircleTime > interval) {
+            // Générer une position aléatoire
             const size = Math.floor(Math.random() * 20) + 40; // Taille entre 40 et 60
             const x = Math.random() * (this.canvas.width - size);
             const y = Math.random() * (this.canvas.height - size);
@@ -311,10 +335,6 @@ class OsuGame {
                 type: circleType.name,
                 color: circleType.color,
                 scoreMultiplier: circleType.scoreMultiplier,
-                // Propriétés spécifiques aux sliders
-                isSlider: circleType.name === 'slider',
-                sliderLength: circleType.name === 'slider' ? Math.random() * 200 + 100 : 0,
-                sliderDirection: Math.random() > 0.5 ? 1 : -1,
                 // Propriétés spécifiques aux spinners
                 isSpinner: circleType.name === 'spinner',
                 spinRequired: circleType.name === 'spinner' ? 3 : 0,
@@ -325,6 +345,9 @@ class OsuGame {
         }
     }
 
+    /**
+     * Met à jour l'état des cercles
+     */
     updateCircles(now) {
         this.circles = this.circles.filter(circle => {
             // Vérifier si le cercle a expiré
@@ -341,6 +364,9 @@ class OsuGame {
         });
     }
 
+    /**
+     * Vérifie si un clic a touché un cercle
+     */
     checkHitCircles(x, y) {
         // Vérifier d'abord si le joueur a cliqué sur un powerup
         if (this.collectPowerup(x, y)) {
@@ -436,6 +462,9 @@ class OsuGame {
         }
     }
 
+    /**
+     * Gère un cercle manqué
+     */
     missCircle() {
         // Réinitialiser le combo
         this.combo = 0;
@@ -451,6 +480,9 @@ class OsuGame {
         this.updateUI();
     }
 
+    /**
+     * Ajoute un effet visuel de feedback
+     */
     addHitFeedback(x, y, type) {
         this.hitFeedbacks.push({
             x: x,
@@ -461,6 +493,9 @@ class OsuGame {
         });
     }
 
+    /**
+     * Met à jour les effets visuels de feedback
+     */
     updateHitFeedbacks() {
         this.hitFeedbacks = this.hitFeedbacks.filter(feedback => {
             feedback.opacity -= 0.05;
@@ -469,6 +504,9 @@ class OsuGame {
         });
     }
 
+    /**
+     * Dessine tous les éléments du jeu
+     */
     draw() {
         // Effacer le canvas
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -481,6 +519,22 @@ class OsuGame {
         this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
         
         // Dessiner les powerups
+        this.drawPowerups();
+        
+        // Dessiner les cercles
+        this.drawCircles();
+        
+        // Dessiner les effets de feedback
+        this.drawFeedbacks();
+        
+        // Afficher les powerups actifs
+        this.drawActivePowerups();
+    }
+
+    /**
+     * Dessine les powerups
+     */
+    drawPowerups() {
         this.powerups.forEach(powerup => {
             // Cercle du powerup
             this.ctx.beginPath();
@@ -523,8 +577,12 @@ class OsuGame {
             
             this.ctx.fillText(icon, powerup.x + powerup.size / 2, powerup.y + powerup.size / 2);
         });
-        
-        // Dessiner les cercles d'approche
+    }
+
+    /**
+     * Dessine les cercles
+     */
+    drawCircles() {
         this.circles.forEach(circle => {
             const timeElapsed = performance.now() - circle.createdAt;
             const progress = timeElapsed / this.approachTime;
@@ -573,7 +631,11 @@ class OsuGame {
                 this.ctx.fillStyle = 'white';
                 this.ctx.textAlign = 'center';
                 this.ctx.textBaseline = 'middle';
-                this.ctx.fillText(`${circle.spinCount}/${circle.spinRequired}`, circle.x + circle.size / 2, circle.y + circle.size / 2);
+                this.ctx.fillText(
+                    `${circle.spinCount}/${circle.spinRequired}`, 
+                    circle.x + circle.size / 2, 
+                    circle.y + circle.size / 2
+                );
                 
                 // Dessiner un cercle de progression
                 const spinProgress = circle.spinCount / circle.spinRequired;
@@ -590,8 +652,12 @@ class OsuGame {
                 this.ctx.stroke();
             }
         });
-        
-        // Dessiner les effets de feedback
+    }
+
+    /**
+     * Dessine les effets de feedback
+     */
+    drawFeedbacks() {
         this.hitFeedbacks.forEach(feedback => {
             this.ctx.save();
             this.ctx.globalAlpha = feedback.opacity;
@@ -608,10 +674,6 @@ class OsuGame {
                     break;
                 case 'ok':
                     color = '#ffcc00';
-                    break;
-                case 'slider':
-                    color = '#66ccff';
-                    text = 'SLIDER!';
                     break;
                 case 'powerup':
                     color = '#ff66aa';
@@ -632,8 +694,12 @@ class OsuGame {
             this.ctx.fillText(text, feedback.x, feedback.y);
             this.ctx.restore();
         });
-        
-        // Afficher les powerups actifs
+    }
+
+    /**
+     * Dessine les powerups actifs
+     */
+    drawActivePowerups() {
         if (this.activePowerups.length > 0) {
             let y = 30;
             this.ctx.font = '16px Arial';
@@ -667,6 +733,9 @@ class OsuGame {
         }
     }
 
+    /**
+     * Met à jour l'interface utilisateur
+     */
     updateUI() {
         document.getElementById('score').textContent = Math.floor(this.score);
         document.getElementById('highScore').textContent = Math.floor(this.highScore);
@@ -678,6 +747,9 @@ class OsuGame {
         comboElement.classList.toggle('high', this.combo >= 10);
     }
 
+    /**
+     * Charge les meilleurs scores depuis l'API
+     */
     async loadHighScores() {
         try {
             // Mettre à jour le lien vers les high-scores avec l'ID correct
@@ -704,6 +776,9 @@ class OsuGame {
         }
     }
 
+    /**
+     * Termine le jeu et affiche l'écran de fin
+     */
     endGame() {
         this.gameOver = true;
         
@@ -722,6 +797,9 @@ class OsuGame {
         }
     }
 
+    /**
+     * Sauvegarde le score dans la base de données
+     */
     async saveScore() {
         if (!this.gameId) return;
         
@@ -745,11 +823,17 @@ class OsuGame {
         }
     }
 
+    /**
+     * Redémarre le jeu
+     */
     restart() {
         document.getElementById('gameOver').classList.add('hidden');
         this.startCountdown();
     }
     
+    /**
+     * Augmente le niveau du joueur
+     */
     levelUp() {
         if (this.level < this.maxLevel) {
             this.level++;
@@ -769,6 +853,9 @@ class OsuGame {
         }
     }
     
+    /**
+     * Génère un nouveau powerup
+     */
     generatePowerup(now) {
         // Générer des powerups aléatoirement
         if (now - this.lastPowerupTime > this.powerupInterval) {
@@ -801,6 +888,9 @@ class OsuGame {
         }
     }
     
+    /**
+     * Met à jour les powerups
+     */
     updatePowerups(now) {
         // Mettre à jour les powerups et vérifier les collisions
         for (let i = 0; i < this.powerups.length; i++) {
@@ -821,6 +911,9 @@ class OsuGame {
         }
     }
     
+    /**
+     * Met à jour les powerups actifs
+     */
     updateActivePowerups(now) {
         // Mettre à jour les powerups actifs et supprimer ceux qui ont expiré
         for (let i = 0; i < this.activePowerups.length; i++) {
@@ -833,11 +926,16 @@ class OsuGame {
         }
     }
     
+    /**
+     * Vérifie si un powerup spécifique est actif
+     */
     hasPowerup(type) {
-        // Vérifier si un powerup spécifique est actif
         return this.activePowerups.some(p => p.type === type);
     }
     
+    /**
+     * Collecte un powerup si le joueur a cliqué dessus
+     */
     collectPowerup(x, y) {
         for (let i = 0; i < this.powerups.length; i++) {
             const powerup = this.powerups[i];
@@ -875,6 +973,9 @@ class OsuGame {
     }
 }
 
+/**
+ * Initialisation du jeu au chargement de la page
+ */
 window.addEventListener('load', () => {
     new OsuGame();
 });
